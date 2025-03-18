@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'core',
     'posts',
     'interactions',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -84,6 +85,8 @@ DATABASES = {
         'PORT': env('DB_PORT'),
     }
 }
+
+AUTH_USER_MODEL = "core.User"
 
 
 # Password validation
