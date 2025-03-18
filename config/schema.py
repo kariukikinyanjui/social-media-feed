@@ -6,7 +6,21 @@ from interactions.models import Comment, Like, Share
 
 
 class Query(graphene.ObjectType):
-    hello = graphene.String(default_value="Hello, World!")
+    all_users = graphene.List(UserType)
+    all_posts = graphene.List(PostType)
+    post_by_id = graphene.Field(PostType, id=graphene.ID(required=True))
+
+    def resolve_all_users(root, info):
+        return User.objects.all()
+
+    def resolve_all_posts(root, info):
+        return Post.objects.all()
+
+    def resolve_post_by_id(root, info, id):
+        try:
+            return Post.objects.get(id=id)
+        except Post.DoesNotExist:
+            return None
 
 schema = graphene.Schema(query=Query)
 
