@@ -53,6 +53,87 @@ class ShareInput(graphene.InputObjectType):
     post_id = graphene.ID(required=True)
 
 
+class CreatePost(graphene.Mutation):
+    class Arguments:
+        input = PostInput(required=True)
+
+    post = graphene.Field(PostType)
+
+    def mutate(self, info, input):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception("Authentication required!")
+
+        post = Post(
+            author=user,
+            content=input.content,
+            image=input.image,
+        )
+        post.save()
+        return CreatePOst(post=post)
+
+
+class LikePost(graphene.Mutation):
+    class Arguments:
+        input = LikeInput(required=True)
+
+    like = graphene.Field(LikeType)
+
+    def mutate(self, info, input):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception("Authentication required!")
+
+        post = Post.objects.get(id=input.post_id)
+        like, created = Like.objects.get_or_create(post=post, user=user)
+        if created:
+            post.likes_count += 1
+            post.save()
+        return LikePost(like=like)
+
+
+class CreateComment(graphene.Mutation):
+    class Arguments:
+        input = CommentInput(required=True)
+
+    comment = graphene.Field(CommentType)
+
+    def mutate(self, info, input):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception("Authentication required!")
+
+        post = Post.objects.get(id=input.post_id)
+        comment = Comment(
+            post=post,
+            user=user,
+            text=input.text,
+        )
+        comment.save()
+        post.comments_count += 1
+        post.save()
+        return CreateComment(comment=comment)
+
+
+class SharePost(graphene.Mutation):
+    class Arguments:
+        input = ShareInput(required=True)
+
+    share = graphene.Field(ShareType)
+
+    def mutate(self, info, input):
+        user = info.context.user
+        if user.is_anonymous:
+            raise Exception("Authentication required!")
+
+        post = Post.objects.get(id=input.post_id)
+        share = Share(post=post, user=user)
+        share.save()
+        post.shares_count += 1
+        post.save()
+        return SharePost(share=share)
+
+
 class Query(graphene.ObjectType):
     all_users = graphene.List(UserType)
     all_posts = graphene.List(PostType)
