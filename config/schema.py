@@ -134,6 +134,13 @@ class SharePost(graphene.Mutation):
         return SharePost(share=share)
 
 
+class Mutation(graphene.ObjectType):
+    create_post = CreatePost.Field()
+    like_post = LikePost.Field()
+    create_comment = CreateComment.Field()
+    share_post = SharePost.Field()
+
+
 class Query(graphene.ObjectType):
     all_users = graphene.List(UserType)
     all_posts = graphene.List(PostType)
@@ -159,4 +166,4 @@ class Query(graphene.ObjectType):
         except Post.DoesNotExist:
             return None
 
-schema = graphene.Schema(query=Query)
+schema = graphene.Schema(query=Query, mutation=Mutation)
