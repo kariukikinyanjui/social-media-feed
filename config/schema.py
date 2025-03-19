@@ -35,6 +35,24 @@ class ShareType(DjangoObjectType):
         fields = ('id', 'post', 'user', 'timestamp')
 
 
+class PostInput(graphene.InputObjectType):
+    content = graphene.String(required=True)
+    image = graphene.String()
+
+
+class CommentInput(graphene.InputObjectType):
+    post_id = graphene.ID(required=True)
+    text = graphene.String(required=True)
+
+
+class LikeInput(graphene.InputObjectType):
+    post_id = graphene.ID(required=True)
+
+
+class ShareInput(graphene.InputObjectType):
+    post_id = graphene.ID(required=True)
+
+
 class Query(graphene.ObjectType):
     all_users = graphene.List(UserType)
     all_posts = graphene.List(PostType)
